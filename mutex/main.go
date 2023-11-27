@@ -6,28 +6,38 @@ import (
 )
 
 type SafeCounter struct {
-	mu     sync.Mutex
-	NumMap map[string]int
+	mu sync.Mutex
+	v  map[string]int
 }
 
-func (s *SafeCounter) Add(num int) {
-    s.mu.Lock()
-    defer s.mu.Unlock()
-    s.NumMap["key"] = num
+func NewSafeCounter() *SafeCounter {
+	return &SafeCounter{v: make(map[string]int)}
+}
+
+func (c *SafeCounter) Inc(key string) {
+	c.mu.Lock()
+	c.v[key]++
+	c.mu.Unlock()
+}
+
+func (c *SafeCounter) Value(key string) int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.v[key]
 }
 
 func main() {
-    s := SafeCounter{NumMap: make(map[string]int)}
-    var wg sync.WaitGroup
+	s := NewSafeCounter()
+	var wg sync.WaitGroup
 
-    for i := 0; i < 100; i++ {
-        wg.Add(1)
-        go func(i int) {
-           defer wg.Done()
-           s.Add(i)
-        }(i)
-    }
+	for i := 0; i < 100; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			s.Inc("x")
+		}()
+	}
 
-    wg.Wait()
-    fmt.Println(s.NumMap["key"])
+	wg.Wait()
+	fmt.Println(s.Value("x"))
 }
