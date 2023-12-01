@@ -1,0 +1,17 @@
+[
+    {
+        "name": "Matheus",
+        "price": 32.4,
+        "amount": 2
+    },
+    {
+        "name": "Aline",
+        "price": 2.4,
+        "amount": 4
+    },
+    {
+        "name": "Thiago",
+        "price": 25.9,
+        "amount": 9
+    }
+]
